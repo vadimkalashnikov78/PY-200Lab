@@ -136,8 +136,8 @@ class User:
 
 class Store:
     def __init__(self):
-        product_id = IdCounter()
-        user_id = IdCounter()
+        product_id = IdCounter()  # Запуск счетчика продуктов
+        user_id = IdCounter()  # Запуск счетчика пользователей
 
         user_1 = str(input("Добрый день!\nВы попали в магазин Продуктовых товаров\nВведите свой username :\n"))
         user1 = User(user_1, user_id)
@@ -157,7 +157,6 @@ class Store:
                 print("Спасибо за посещение нашего магазина\n")
                 print("Ваша продуктовая корзина выглядит так:\n")
                 print(user1._cart_.__str__())
-
 
     def add_product(product_id: IdCounter):
         prod1 = Product(get_product(), get_price(), get_rating(), product_id)
