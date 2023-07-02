@@ -3,14 +3,17 @@ import hashlib
 import random
 
 # Данные для генерации случайных значений в магазин продуктов
-def get_product() -> str:  # Задание названия продукта случайным выборов из файла products.txt
 
+
+def get_product() -> str:  # Задание названия продукта случайным выборов из файла products.txt
     with open("products.txt", encoding="UTF-8") as f:
         return random.choice([index_.strip() for index_ in f.readlines()])
+
 
 def get_price() -> float:  # Задание цены продукта случайным выборов
     price = round(random.uniform(100.0, 1000.0), 2)
     return price
+
 
 def get_rating() -> float:  # Задание рейтинга продукта
     rating = round(random.uniform(0.0, 5.0), 2)
@@ -18,19 +21,19 @@ def get_rating() -> float:  # Задание рейтинга продукта
 
 # Клаcc IdCounter
 
-class IdCounter:
-    def start_count_Id(self, value=1):
-        self.value = value
-        return self.value
 
-    def increment_Id(self):
+class IdCounter:
+    def __init__(self):
+        self.value = 1
+
+    def current_id(self):
         self.value += 1
         return self.value
 
-    def display_Id(self):
+    def display_id(self):
         print(f"Текущее значение Id {self.value}")
 
-    def reset_Id(self):
+    def reset_id(self):
         self.value = 0
         return self.value
 
@@ -39,46 +42,59 @@ class IdCounter:
 
 class Password:
     def __init__(self):
-        self.password = str(input("Введите пароль:\n"))
+        self.password = str(input("Введите пароль, он должен быть строковым и больше 8 символов:\n"))
+
     def get(self):  # Получение хэша для пароля с проверкой
         if isinstance(self.password, str) and (len(self.password) >= 8):
             pass_hash_ = hashlib.sha256(self.password.encode()).hexdigest()
         else:
-            raise("Пароль должен быть строковым и больше 8 символов")
+            raise "Пароль должен быть строковым и больше 8 символов"
         return pass_hash_
 
-    def check(self, hash_): # Проверка совпадения хэша пароля
+    def check(self, hash_):  # Проверка совпадения хэша пароля
         check_sum = True
-        if Password.get() != hash_:
+        if Password.get(self) != hash_:
             check_sum = False
         return check_sum
 
 # Класс Product
 
+
 class Product:
 
     def __init__(self, name, price, rating):
-        self._id_ = 1
-        if isinstance(name, str):  # проверка типа
-            self._name_ = name  #Задаем имя продукта
+        self._product_id_ = id(self)
+        self.name = self.check_name(name)
+        self.price = self.check_price(price)
+        self.rating = self.check_rating(rating)
+
+    def check_name(self, name_: str):
+        if isinstance(name_, str):  # проверка типа
+            return str(name_)  # Задаем имя продукта
         else:
             raise("Имя продукта должно быть строкой", TypeError)
-        if isinstance(price, float) and (price >= 0): #
-            self.price = round(price, 2) #
+
+    def check_price(self, price_: float):
+        if isinstance(price_, float) and (price_ >= 0):  # проверка типа и значения
+            return round(price_, 2)  # Задаем цену
         else:
             raise("Цена должна быть действительным числом >= 0", TypeError)
-        if isinstance(rating, float) and (rating >= 0):  # проверка типа
-            self.rating = round(rating, 2)  #Задаем рейтинг
+
+    def check_rating(self, rating_: float):
+        if isinstance(rating_, float) and (rating_ >= 0):  # проверка типа
+            return round(rating_, 2)  # Задаем рейтинг
         else:
-            raise("Рейтинг доложен быть числом больше 0", TypeError)
+            raise ("Рейтинг доложен быть числом больше 0", TypeError)
 
     def __str__(self) -> str:
-        return f"{self._id_}_{self._name_}"
+        return f"{self._product_id_}_{self.name}"
 
     def __repr__(self) -> str:
-        return f"Product(id={self._id_}, name={self._name_}, price={self.price}, rating={self.rating})"
+        return f"Product(id={self._product_id_}, name={self.name}, price={self.price}, rating={self.rating})"
 
 # Класс Cart
+
+
 class Cart:
     def __init__(self):
         self.content = {
@@ -95,30 +111,30 @@ class Cart:
 
 
 # Класс User
-class User():
+class User:
 
     def __init__(self, username: str):
-        self._id_ = 1
-        if isinstance(username, str):  # проверка типа
-            self._username_ = username  #Задаем имя пользователя
-        else:
-            raise("Имя пользователя должно быть строкой", TypeError)
-
+        self._user_id_ = id(self)
+        self._username_ = self.check_username(username)
         self.userpassword = Password()
         self._cart_ = Cart()
 
-
+    def check_username(self, username):
+        if isinstance(username, str):
+            return str(username)
+        else:
+            raise("Имя пользователя должно быть строкой", TypeError)
 
     def __str__(self) -> str:
-        return f"{self._id_}_{self._username_}"
+        return f"{self._user_id_}_{self._username_}"
 
     def __repr__(self) -> str:
-        return f"User={self._id_}, name={self._username_})"
+        return f"User={self._user_id_}, name={self._username_})"
 
 
 # Класс Store
 
-class Store():
+class Store:
     def __init__(self):
         user_1 = str(input("Добрый день!\nВы попали в магазин Продуктовых товаров\nВведите свой username :\n"))
         user1 = User(user_1)
@@ -127,21 +143,24 @@ class Store():
 
         frog = "in"
         while frog != "out":
-            prod = Store.add_product(self)
-            print(f"Хотите добавить случайны продукт {prod} к себе в корзину?")
-            if_or_no = str(input("Введите Да или Yes:\n"))
+            prod = Store.add_product()
+            print(f"Хотите добавить случайны продукт {prod.__repr__()} к себе в корзину?")
+            if_or_no = str(input("Введите Да или Yes, или наберите любое другое слово для выхода:\n"))
             if (if_or_no == "Да") or (if_or_no == "Yes"):
                 user1._cart_.add(prod, 1)
                 print("Ваша корзина товаров выглядит вот так:\n", user1._cart_.__str__())
             else:
                 frog = "out"
-                print("Спасибо за посещение нашего магазина")
+                print("Спасибо за посещение нашего магазина\n")
+                print("Ваша продуктовая корзина выглядит так:\n")
+                print(user1._cart_.__str__())
 
-    def add_product(self):
+    @staticmethod
+    def add_product():
         prod1 = Product(get_product(), get_price(), get_rating())
-        return prod1.__repr__()
+        return prod1
 
-# Press the green button in the gutter to run the script.
+
 if __name__ == '__main__':
     Store()
 
