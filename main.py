@@ -62,8 +62,8 @@ class Password:
 
 class Product:
 
-    def __init__(self, name, price, rating):
-        self._product_id_ = id(self)
+    def __init__(self, name, price, rating, product_id: IdCounter):
+        self._product_id_ = product_id.current_id()
         self.name = self.check_name(name)
         self.price = self.check_price(price)
         self.rating = self.check_rating(rating)
@@ -113,8 +113,8 @@ class Cart:
 # Класс User
 class User:
 
-    def __init__(self, username: str):
-        self._user_id_ = id(self)
+    def __init__(self, username: str, user_id: IdCounter):
+        self._user_id_ = user_id.current_id()
         self._username_ = self.check_username(username)
         self.userpassword = Password()
         self._cart_ = Cart()
@@ -136,14 +136,17 @@ class User:
 
 class Store:
     def __init__(self):
+        product_id = IdCounter()
+        user_id = IdCounter()
+
         user_1 = str(input("Добрый день!\nВы попали в магазин Продуктовых товаров\nВведите свой username :\n"))
-        user1 = User(user_1)
+        user1 = User(user_1, user_id)
         print("Вы успешно зарегистрировались в Магазине\n", "Ваш пользователь:", user1._username_)
         print("Ваша корзина товаров выглядит вот так:\n", user1._cart_.__str__())
 
         frog = "in"
         while frog != "out":
-            prod = Store.add_product()
+            prod = Store.add_product(product_id)
             print(f"Хотите добавить случайны продукт {prod.__repr__()} к себе в корзину?")
             if_or_no = str(input("Введите Да или Yes, или наберите любое другое слово для выхода:\n"))
             if (if_or_no == "Да") or (if_or_no == "Yes"):
@@ -155,9 +158,9 @@ class Store:
                 print("Ваша продуктовая корзина выглядит так:\n")
                 print(user1._cart_.__str__())
 
-    @staticmethod
-    def add_product():
-        prod1 = Product(get_product(), get_price(), get_rating())
+
+    def add_product(product_id: IdCounter):
+        prod1 = Product(get_product(), get_price(), get_rating(), product_id)
         return prod1
 
 
