@@ -61,9 +61,10 @@ class Password:
 
 
 class Product:
-
+#    product_id_counter = IdCounter()
     def __init__(self, name, price, rating, product_id: IdCounter):
         self._product_id_ = product_id.current_id()
+#        self.product_id_count = Product.__class__.product_id_counter.current_id()
         self.name = self.check_name(name)
         self.price = self.check_price(price)
         self.rating = self.check_rating(rating)
